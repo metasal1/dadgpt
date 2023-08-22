@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react'
 import dad1 from '../public/dad1.png'
 import dad2 from '../public/dad2.png'
 import dad3 from '../public/dad3.png'
+import Counter from '../components/Counter'
 
 export default function Home() {
 
@@ -140,7 +141,7 @@ export default function Home() {
         </div>
 
         <footer className={styles.footer}>
-          <small id="footer">©️ Copyright 2023 <a href="https://metasal.vercel.app" target="_blank">Salim Karim</a></small>
+          <Counter />
 
         </footer>
       </main >
