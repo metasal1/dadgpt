@@ -2,8 +2,8 @@
 
 # dependencies
 node_modules/
-.vercel
-.next
+.vercel/
+.next/
 
 # Native
 *.orig.*
