@@ -2,11 +2,8 @@
 
 # dependencies
 node_modules/
-
-# Expo
-.expo/
-dist/
-web-build/
+.vercel
+.next
 
 # Native
 *.orig.*
