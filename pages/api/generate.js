@@ -1,5 +1,6 @@
-export default async function handler(req, res) {
+import { MongoClient } from 'mongodb';
 
+export default async function handler(req, res) {
 
   const { question } = req.body;
   const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
@@ -37,6 +38,33 @@ export default async function handler(req, res) {
       console.log(response)
       const answer = response.choices[0].message.content;
       console.log('Answer:', answer);
+
+      const url = process.env.MONGODB_URI;
+      const dbName = 'dadgpt';
+      const collectionName = 'queries';
+
+      const data = {
+        question,
+        answer,
+        ip
+      };
+      MongoClient.connect(url)
+        .then(client => {
+          const db = client.db(dbName);
+          db.collection(collectionName).insertOne(data)
+            .then(result => {
+              console.log('Data saved to MongoDB:', result);
+              client.close();
+            })
+            .catch(err => {
+              console.error('Error saving data to MongoDB:', err);
+            });
+        })
+        .catch(err => {
+          console.error('Error connecting to MongoDB:', err);
+        });
+
+
       res.status(200).json({ question, answer })
       return answer;
     } else {
