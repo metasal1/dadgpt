@@ -240,7 +240,6 @@ export default function Home() {
           {/* {image && <Image src={image} alt="Dad" width={"100"} height={"50"} />} */}
           {/* {imgurlink} */}
         </div>
-        <audio controls src={audio} ></audio>
         <footer className={styles.footer}>
           <Counter />
         </footer>
