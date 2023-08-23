@@ -4,6 +4,7 @@ import styles from '../styles/Home.module.css'
 import { useState, useEffect, useRef } from 'react'
 import Counter from '../components/Counter'
 import html2canvas from 'html2canvas';
+import { Analytics } from '@vercel/analytics/react';
 
 export default function Home() {
 
@@ -219,6 +220,7 @@ export default function Home() {
           <Counter />
         </footer>
       </main >
+      <Analytics />
     </div >
   )
 }
