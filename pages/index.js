@@ -17,6 +17,7 @@ export default function Home() {
   const [recognition, setRecognition] = useState();
   const [image, setImage] = useState(null);
   const [imgurlink, setImgurlink] = useState(null);
+  const [audio, setAudio] = useState(null);
 
   const audioRef = useRef(null);
 
@@ -59,6 +60,27 @@ export default function Home() {
       uploadImage(imageData);
 
     });
+  }
+
+  useEffect(() => {
+    if (answer) {
+      createMp3(answer);
+    }
+  }, [answer]);
+
+  const createMp3 = async (a) => {
+    console.log('createMp3');
+
+    const url = await fetch('api/voice', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ answer: a })
+    })
+    const response = await url.json();
+    console.log(response);
+    setAudio(response.url);
   }
 
   const downloadImage = async (i) => {
@@ -109,19 +131,19 @@ export default function Home() {
     window.open(tweetUrl, '_blank');
   }
 
-  const shareToTwitter = (text) => {
-    const maxTweetLength = 280;
-    const url = 'https://dadgpt.vercel.app';
-    const encodedUrl = encodeURIComponent(url);
-    let tweetText = text + ' ' + url;
+  // const shareToTwitter = (text) => {
+  //   const maxTweetLength = 280;
+  //   const url = 'https://dadgpt.vercel.app';
+  //   const encodedUrl = encodeURIComponent(url);
+  //   let tweetText = text + ' ' + url;
 
-    if (tweetText.length > maxTweetLength) {
-      tweetText = text.substring(0, maxTweetLength - encodedUrl.length - 5) + '...' + ' #dadgpt ' + url; // -4 for ellipsis and space
-    }
+  //   if (tweetText.length > maxTweetLength) {
+  //     tweetText = text.substring(0, maxTweetLength - encodedUrl.length - 5) + '...' + ' #dadgpt ' + url; // -4 for ellipsis and space
+  //   }
 
-    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
-    window.open(tweetUrl, '_blank');
-  }
+  //   const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+  //   window.open(tweetUrl, '_blank');
+  // }
 
   async function getAnswer(question) {
     setLoading(true);
@@ -205,6 +227,8 @@ export default function Home() {
             <div className={styles.recording} hidden={!recording}></div>
             <div className={styles.loader} hidden={!loading}></div>
           </div>
+        </div>
+        <div>
           {!question ? <div className={styles.output}>{permsmsg}</div> : null}
           {question && <div className={styles.question}>{question}?</div>}
           <div className={styles.answer}>{answer}</div>
@@ -216,6 +240,7 @@ export default function Home() {
           {/* {image && <Image src={image} alt="Dad" width={"100"} height={"50"} />} */}
           {/* {imgurlink} */}
         </div>
+        <audio controls src={audio} ></audio>
         <footer className={styles.footer}>
           <Counter />
         </footer>
