@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "html2canvas": "^1.4.1",
     "mongodb": "^5.8.0",
     "next": "13.4.19",
     "react": "18.2.0",

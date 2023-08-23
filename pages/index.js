@@ -2,10 +2,8 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import { useState, useEffect, useRef } from 'react'
-import dad1 from '../public/dad1.png'
-import dad2 from '../public/dad2.png'
-import dad3 from '../public/dad3.png'
 import Counter from '../components/Counter'
+import html2canvas from 'html2canvas';
 
 export default function Home() {
 
@@ -16,11 +14,19 @@ export default function Home() {
   const [perms, setPerms] = useState(false);
   const [permsmsg, setPermsmsg] = useState();
   const [recognition, setRecognition] = useState();
+  const [image, setImage] = useState(null);
+  const [imgurlink, setImgurlink] = useState(null);
+
   const audioRef = useRef(null);
+
+  function capitializeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
 
   const playStart = () => {
     audioRef.current.play();
   };
+
   useEffect(() => {
     async function init() {
       try {
@@ -37,7 +43,72 @@ export default function Home() {
     init();
   }, [])
 
-  function shareToTwitter(text) {
+  useEffect(() => {
+    if (question && answer) {
+      createImage();
+      downloadImage();
+    }
+  }, [question, answer]);
+
+  const createImage = async () => {
+    console.log('createImage');
+    html2canvas(document.body).then(canvas => {
+      const imageData = canvas.toDataURL('image/png');
+      setImage(imageData);
+      uploadImage(imageData);
+
+    });
+  }
+
+  const downloadImage = async (i) => {
+    console.log('downloadImage');
+    if (i) {
+      const link = document.createElement('a');
+      link.href = image;
+      link.download = 'dadgpt.png';
+      link.click();
+    }
+  }
+
+  const uploadImage = async (i) => {
+
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    console.log(i);
+    var raw = JSON.stringify({
+      "image": i
+    });
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow'
+    };
+
+    const data = await fetch("api/upload", requestOptions)
+    const response = await data.json();
+    console.log(response);
+    setImgurlink(response.link);
+    console.log(imgurlink);
+  }
+
+  const shareImageToTwitter = async (text) => {
+    const maxTweetLength = 280;
+    const url = 'https://dadgpt.vercel.app';
+    const encodedUrl = encodeURIComponent(url);
+    let tweetText = text + ' ' + url;
+
+    if (tweetText.length > maxTweetLength) {
+      tweetText = imgurlink + text.substring(0, maxTweetLength - encodedUrl.length - 5) + '...' + ' #dadgpt ' + url; // -4 for ellipsis and space
+    }
+
+    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText + " " + imgurlink)}`;
+    window.open(tweetUrl, '_blank');
+  }
+
+  const shareToTwitter = (text) => {
     const maxTweetLength = 280;
     const url = 'https://dadgpt.vercel.app';
     const encodedUrl = encodeURIComponent(url);
@@ -50,7 +121,6 @@ export default function Home() {
     const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
     window.open(tweetUrl, '_blank');
   }
-
 
   async function getAnswer(question) {
     setLoading(true);
@@ -91,7 +161,7 @@ export default function Home() {
     recognition.onresult = async function (event) {
       const q = event.results[0][0].transcript
       setRecording(false);
-      setQuestion(q)
+      setQuestion(capitializeFirstLetter(q))
       getAnswer(q)
     }
 
@@ -114,9 +184,9 @@ export default function Home() {
 
       <main className={styles.main}>
         <div className={styles.dad}>
-          <Image className={styles.pixelate} src={dad1} alt="Dad" />
-          <Image className={styles.pixelate} src={dad2} alt="Dad" />
-          <Image className={styles.pixelate} src={dad3} alt="Dad" />
+          <Image className={styles.pixelate} src="/dad1.png" width={100} height={100} alt="Brown Dad" />
+          <Image className={styles.pixelate} src="/dad2.png" width={100} height={100} alt="Old Dad" />
+          <Image className={styles.pixelate} src="/dad3.png" width={100} height={100} alt="White Dad" />
         </div>
         <h1 className={styles.title}>
           Dad GPT
@@ -137,12 +207,16 @@ export default function Home() {
           {!question ? <div className={styles.output}>{permsmsg}</div> : null}
           {question && <div className={styles.question}>{question}?</div>}
           <div className={styles.answer}>{answer}</div>
-          {question && answer && <button onClick={() => shareToTwitter(question + "? " + answer)}>Share to X</button>}
+          {/* {question && answer && <button onClick={() => shareToTwitter(question + "? " + answer)}>Share to X</button>} */}
+          {question && answer && <button onClick={() => shareImageToTwitter(question + "? ")}>Share</button>}
+          {/* <button onClick={createImage}>Create Image</button> */}
+          {/* <button onClick={downloadImage}>Download Image</button> */}
+          {/* <button onClick={uploadImage}>Upload Image</button>/ */}
+          {/* {image && <Image src={image} alt="Dad" width={"100"} height={"50"} />} */}
+          {/* {imgurlink} */}
         </div>
-
         <footer className={styles.footer}>
           <Counter />
-
         </footer>
       </main >
     </div >

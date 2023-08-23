@@ -2,6 +2,8 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/api/counter": "pages/api/counter.js",
-  "/": "pages/index.js"
+  "/": "pages/index.js",
+  "/api/upload": "pages/api/upload.js",
+  "/api/generate": "pages/api/generate.js",
+  "/api/counter": "pages/api/counter.js"
 }
