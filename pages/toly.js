@@ -211,10 +211,6 @@ export default function Home() {
           Hey Toly!
         </h1>
 
-        <p className={styles.description}>
-          What is up Solana ppl!?
-        </p>
-
         <div className={styles.grid}>
           <button onClick={start} className={styles.button} disabled={recording}>🎙️ Start</button>
           <button onClick={stop} className={styles.button} disabled={!recording}>🛑 Stop</button>
