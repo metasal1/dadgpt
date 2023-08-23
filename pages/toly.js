@@ -232,7 +232,7 @@ export default function Home() {
           {/* {image && <Image src={image} alt="Dad" width={"100"} height={"50"} />} */}
           {/* {imgurlink} */}
         </div>
-        <audio ref={mp3Ref} controls src={audio}></audio>
+        <audio ref={mp3Ref} controls src={audio} hidden={!audio}></audio>
         {audioLoading ? <div className={styles.loader}></div> : null}
         <footer className={styles.footer}>
           <Counter />
