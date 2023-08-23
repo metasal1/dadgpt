@@ -3,7 +3,6 @@ import { MongoClient } from 'mongodb';
 export default async function handler(req, res) {
   const mongoURL = process.env.MONGODB_URI;
   const dbName = 'dadgpt'; // Replace with your specific database name
-  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method Not Allowed' });
