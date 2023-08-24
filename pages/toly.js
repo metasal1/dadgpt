@@ -28,16 +28,8 @@ export default function Home() {
   }
 
   const playStart = () => {
-    // audioRef.current.play();
-    // mp3.play();
+    audioRef.current.play();
   };
-
-  useEffect(() => {
-    // const audioB = new Audio(audio);
-    // audioB.play();
-    mp3Ref.current.play()
-  }, [audio])
-
 
   useEffect(() => {
     async function init() {
@@ -62,6 +54,12 @@ export default function Home() {
     }
   }, [question, answer]);
 
+  useEffect(() => {
+    if (audio) {
+      mp3Ref.current.play();
+    }
+  }, [audio]);
+
   const createImage = async () => {
     console.log('createImage');
     html2canvas(document.body).then(canvas => {
@@ -82,16 +80,16 @@ export default function Home() {
     console.log('createMp3');
     setAudioloading(true);
 
-    const url = await fetch('api/voice', {
+    const response = await fetch('api/tts', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ answer: a })
     })
-    const response = await url.json();
-    console.log(response);
-    setAudio(response.url);
+    const audioBlob = await response.blob();
+    const audioUrl = URL.createObjectURL(audioBlob);
+    setAudio(audioUrl);
     setAudioloading(false);
 
   }
@@ -111,7 +109,6 @@ export default function Home() {
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
-    console.log(i);
     var raw = JSON.stringify({
       "image": i
     });
@@ -127,7 +124,6 @@ export default function Home() {
     const response = await data.json();
     console.log(response);
     setImgurlink(response.link);
-    console.log(imgurlink);
   }
 
   const shareImageToTwitter = async (text) => {
@@ -168,6 +164,8 @@ export default function Home() {
     setAnswer('');
     setQuestion('');
     setRecording(true);
+    setAudio(null);
+    setAudioloading(false);
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
@@ -233,7 +231,7 @@ export default function Home() {
           {/* {image && <Image src={image} alt="Dad" width={"100"} height={"50"} />} */}
           {/* {imgurlink} */}
         </div>
-        <audio ref={mp3Ref} controls={audio} src={audio}></audio>
+        <audio ref={mp3Ref} controls src={audio}></audio>
         <div className={styles.loader} hidden={!audioLoading}></div>
         <footer className={styles.footer}>
           <Counter />
