@@ -23,9 +23,6 @@ export default function Home() {
   const mp3Ref = useRef(null);
   const audioRef = useRef(null);
 
-  function handleUserAction() {
-    mp3Ref.current.play();
-  }
   function capitializeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
@@ -34,6 +31,13 @@ export default function Home() {
     // audioRef.current.play();
     // mp3.play();
   };
+
+  useEffect(() => {
+    // const audioB = new Audio(audio);
+    // audioB.play();
+    mp3Ref.current.play()
+  }, [audio])
+
 
   useEffect(() => {
     async function init() {
@@ -69,19 +73,14 @@ export default function Home() {
   }
 
   useEffect(() => {
-    setAudioloading(true);
     if (answer) {
       createMp3(answer);
     }
-    setAudioloading(false);
   }, [answer]);
-
-  useEffect(() => {
-    handleUserAction();
-  }, []);
 
   const createMp3 = async (a) => {
     console.log('createMp3');
+    setAudioloading(true);
 
     const url = await fetch('api/voice', {
       method: 'POST',
@@ -93,6 +92,8 @@ export default function Home() {
     const response = await url.json();
     console.log(response);
     setAudio(response.url);
+    setAudioloading(false);
+
   }
 
   const downloadImage = async (i) => {
@@ -232,8 +233,8 @@ export default function Home() {
           {/* {image && <Image src={image} alt="Dad" width={"100"} height={"50"} />} */}
           {/* {imgurlink} */}
         </div>
-        <audio ref={mp3Ref} controls src={audio} hidden={!audio}></audio>
-        {audioLoading ? <div className={styles.loader}></div> : null}
+        <audio ref={mp3Ref} controls={audio} src={audio}></audio>
+        <div className={styles.loader} hidden={!audioLoading}></div>
         <footer className={styles.footer}>
           <Counter />
         </footer>
