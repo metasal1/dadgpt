@@ -10,6 +10,7 @@ export default function Home() {
 
   const [question, setQuestion] = useState();
   const [answer, setAnswer] = useState();
+  const [error, setError] = useState();
   const [loading, setLoading] = useState(false);
   const [recording, setRecording] = useState(false);
   const [perms, setPerms] = useState(false);
@@ -18,7 +19,6 @@ export default function Home() {
   const [image, setImage] = useState(null);
   const [imgurlink, setImgurlink] = useState(null);
   const [audio, setAudio] = useState(null);
-
   const audioRef = useRef(null);
 
   function capitializeFirstLetter(string) {
@@ -98,7 +98,6 @@ export default function Home() {
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
-    console.log(i);
     var raw = JSON.stringify({
       "image": i
     });
@@ -114,7 +113,6 @@ export default function Home() {
     const response = await data.json();
     console.log(response);
     setImgurlink(response.link);
-    console.log(imgurlink);
   }
 
   const shareImageToTwitter = async (text) => {
@@ -130,20 +128,6 @@ export default function Home() {
     const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText + " " + imgurlink)}`;
     window.open(tweetUrl, '_blank');
   }
-
-  // const shareToTwitter = (text) => {
-  //   const maxTweetLength = 280;
-  //   const url = 'https://dadgpt.vercel.app';
-  //   const encodedUrl = encodeURIComponent(url);
-  //   let tweetText = text + ' ' + url;
-
-  //   if (tweetText.length > maxTweetLength) {
-  //     tweetText = text.substring(0, maxTweetLength - encodedUrl.length - 5) + '...' + ' #dadgpt ' + url; // -4 for ellipsis and space
-  //   }
-
-  //   const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
-  //   window.open(tweetUrl, '_blank');
-  // }
 
   async function getAnswer(question) {
     setLoading(true);
@@ -161,25 +145,26 @@ export default function Home() {
     setAnswer(answer);
     setLoading(false);
 
+    // speakText(answer);
     const speech = new SpeechSynthesisUtterance(answer);
     window.speechSynthesis.speak(speech);
   }
 
-  function start() {
+  useEffect(() => {
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    setRecognition(recognition)
+    // recognition.interimResults = true;
+    recognition.maxAlternatives = 10;
+    // recognition.continuous = true;
+    recognition.lang = 'en-US';
+  }, []);
+
+  const start = () => {
 
     playStart();
     setAnswer('');
     setQuestion('');
     setRecording(true);
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-
-    recognition.onerror = function (event) {
-      console.error('An error occurred: ' + event.error);
-    };
-
-    recognition.start();
 
     recognition.onresult = async function (event) {
       const q = event.results[0][0].transcript
@@ -188,10 +173,22 @@ export default function Home() {
       getAnswer(q)
     }
 
-    setRecognition(recognition);
+    recognition.onerror = (event) => {
+      setStatus('Error occurred in recognition: ' + event.error);
+    }
+
+    recognition.onend = () => {
+      recognition.stop();
+    }
+
+    recognition.onspeechend = () => {
+      console.log("Speech has stopped being detected");
+    };
+
+    recognition.start();
   }
 
-  function stop() {
+  const stop = () => {
     playStart();
     recognition.stop();
     setRecording(false);
@@ -228,17 +225,12 @@ export default function Home() {
             <div className={styles.loader} hidden={!loading}></div>
           </div>
         </div>
+        <div>{error}</div>
         <div>
           {!question ? <div className={styles.output}>{permsmsg}</div> : null}
           {question && <div className={styles.question}>{question}?</div>}
           <div className={styles.answer}>{answer}</div>
-          {/* {question && answer && <button onClick={() => shareToTwitter(question + "? " + answer)}>Share to X</button>} */}
           {question && answer && <button onClick={() => shareImageToTwitter(question + "? ")}>Share</button>}
-          {/* <button onClick={createImage}>Create Image</button> */}
-          {/* <button onClick={downloadImage}>Download Image</button> */}
-          {/* <button onClick={uploadImage}>Upload Image</button>/ */}
-          {/* {image && <Image src={image} alt="Dad" width={"100"} height={"50"} />} */}
-          {/* {imgurlink} */}
         </div>
         <footer className={styles.footer}>
           <Counter />

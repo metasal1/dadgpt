@@ -3,6 +3,12 @@ import styles from "../styles/Counter.module.css";
 const DocumentCount = () => {
   const [count, setCount] = useState();
 
+  const [browser, setBrowser] = useState(null);
+  useEffect(() => {
+    const userAgent = window.navigator.userAgent;
+    setBrowser(userAgent);
+  }, []);
+
   useEffect(() => {
     const fetchDocumentCount = async () => {
       try {
@@ -24,10 +30,13 @@ const DocumentCount = () => {
           <div className={styles.skeletonBlock}></div>
         </div>
       )}
-      {count && <i>DadGPT has answered {count} questions so far</i>}
-      <a href="https://metasal.vercel.app" target="_blank">
-        Copyright 2023 ©️ | Salim Karim
-      </a>
+      {count && <div>DadGPT has answered {count} questions so far</div>}
+      <div>
+        <a href="https://metasal.vercel.app" target="_blank">
+          Copyright 2023 ©️ Salim Karim
+        </a>
+      </div>
+      <div className={styles.browser}>{browser}</div>
     </div>
   );
 };
