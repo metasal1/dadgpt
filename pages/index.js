@@ -217,8 +217,8 @@ export default function Home() {
         </p>
 
         <div className={styles.grid}>
-          <button onClick={start} className={styles.button} disabled={recording}>🎙️ Start</button>
-          <button onClick={stop} className={styles.button} disabled={!recording}>🛑 Stop</button>
+          <button onClick={start} className={styles.button}>🎙️ Start</button>
+          <button onClick={stop} className={styles.button}>🛑 Stop</button>
           <audio id="audio" ref={audioRef} src="start.mp3" hidden></audio>
           <div className={styles.container}>
             <div className={styles.recording} hidden={!recording}></div>
@@ -230,7 +230,7 @@ export default function Home() {
           {!question ? <div className={styles.output}>{permsmsg}</div> : null}
           {question && <div className={styles.question}>{question}?</div>}
           <div className={styles.answer}>{answer}</div>
-          {question && answer && <button onClick={() => shareImageToTwitter(question + "? ")}>Share</button>}
+          {question && answer && <button className={styles.share} onClick={() => shareImageToTwitter(question + "? ")}>Share</button>}
         </div>
         <footer className={styles.footer}>
           <Counter />

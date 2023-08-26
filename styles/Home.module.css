@@ -234,3 +234,10 @@
     animation-delay: 4s;
     z-index: 1;
 }
+
+.share {
+    background-color: #0070f3;
+    color: white;
+    font-size: 1rem;
+    padding: .25rem .5rem;
+}
