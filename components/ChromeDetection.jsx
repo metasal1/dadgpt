@@ -2,25 +2,25 @@ import { useEffect, useState } from "react";
 import styles from "../styles/ChromeDetection.module.css";
 
 const ChromeDetection = () => {
-  const [isChrome, setIsChrome] = useState(false);
-  const [isIOSDevice, setIsIOSDevice] = useState(false);
-
-  useEffect(() => {}, []);
+  const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
-    const userAgent = window.navigator.userAgent;
-    setIsChrome(userAgent.includes("Chrome"));
-    setIsIOSDevice(userAgent.includes("iPhone") || userAgent.includes("iPad"));
-    // Clean up the event listener when the component unmounts
-    return () => {
-      // Perform any necessary cleanup here
-    };
+    if (/Mobi|Android/i.test(navigator.userAgent)) {
+      console.log("You are on a mobile device.");
+      setIsDesktop(false);
+    } else {
+      console.log("You are on a desktop device.");
+      setIsDesktop(true);
+    }
   }, []);
 
-  if (isChrome && isIOSDevice) {
+  if (!isDesktop) {
     return (
       <div className={styles.banner}>
-        <p>Please consider using Safari on iOS for the best experience.</p>
+        <p>
+          Please use a laptop 💻 or computer 🖥️ at the moment.
+          <br /> Mobile app 📱 coming soon!
+        </p>
       </div>
     );
   }
