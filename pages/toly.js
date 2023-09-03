@@ -128,12 +128,12 @@ export default function Home() {
 
   const shareImageToTwitter = async (text) => {
     const maxTweetLength = 280;
-    const url = 'https://dadgpt.vercel.app';
+    const url = 'https://dadgippity.com';
     const encodedUrl = encodeURIComponent(url);
     let tweetText = text + ' ' + url;
 
     if (tweetText.length > maxTweetLength) {
-      tweetText = imgurlink + text.substring(0, maxTweetLength - encodedUrl.length - 5) + '...' + ' #dadgpt ' + url; // -4 for ellipsis and space
+      tweetText = imgurlink + text.substring(0, maxTweetLength - encodedUrl.length - 5) + '...' + ' #dadgippity ' + url; // -4 for ellipsis and space
     }
 
     const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText + " " + imgurlink)}`;

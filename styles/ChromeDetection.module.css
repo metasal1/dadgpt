@@ -1,0 +1,8 @@
+.banner {
+    background-color: white;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    text-align: center;
+    color: #0070f3
+}

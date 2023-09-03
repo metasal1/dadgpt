@@ -30,7 +30,7 @@ const DocumentCount = () => {
           <div className={styles.skeletonBlock}></div>
         </div>
       )}
-      {count && <div>DadGPT has answered {count} questions so far</div>}
+      {count && <div>DadGippity has answered {count} questions so far</div>}
       <div>
         <a href="https://metasal.vercel.app" target="_blank">
           Copyright 2023 ©️ Salim Karim

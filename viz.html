@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Audio Visualization</title>
+</head>
+
+<body>
+    <button onclick="startVisualization()">Start Visualization</button>
+    <button onclick="stopVisualization()">Stop Visualization</button>
+    <canvas id="canvas" width="800" height="400"></canvas>
+    <script>
+        let audioContext;
+        let analyser;
+        let dataArray;
+        let canvas = document.getElementById("canvas");
+        let ctx = canvas.getContext("2d");
+        let source;
+        let animationId;
+
+        function startVisualization() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+            }
+
+            if (audioContext.state === "suspended") {
+                audioContext.resume();
+            }
+
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    source = audioContext.createMediaStreamSource(stream);
+                    source.connect(analyser);
+                    visualize();
+                });
+        }
+
+        function stopVisualization() {
+            if (source) {
+                source.disconnect();
+                source.mediaStream.getTracks().forEach(track => track.stop());
+            }
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+        }
+
+        function visualize() {
+            animationId = requestAnimationFrame(visualize);
+            analyser.getByteFrequencyData(dataArray);
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            let barWidth = (canvas.width / dataArray.length) * 2.5;
+            let barHeight;
+            let x = 0;
+            for (let i = 0; i < dataArray.length; i++) {
+                barHeight = dataArray[i];
+                ctx.fillStyle = "white";
+                ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+                x += barWidth + 1;
+            }
+        }
+    </script>
+</body>
+
+</html>

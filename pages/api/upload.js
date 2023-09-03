@@ -1,5 +1,13 @@
 // pages/api/uploadToImgur.js
 
+export const config = {
+    api: {
+        bodyParser: {
+            sizeLimit: '4mb' // Set desired value here
+        }
+    }
+}
+
 export default async (req, res) => {
     if (req.method !== 'POST') {
         return res.status(405).end(); // Method Not Allowed if not POST

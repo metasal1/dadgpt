@@ -4,17 +4,22 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+
   background: linear-gradient(to right,
-      #e32636,
-      /* Bart's Red */
-      #fcd116,
-      /* Homer's Yellow */
-      #4a90d9,
-      /* Marge's Blue */
-      #4db849,
-      /* Lisa's Green */
-      #4169e1
-      /* Maggie's Blue */
+      #ffb6c1,
+      /* Pastel Pink */
+      #ffa07a,
+      /* Pastel Salmon */
+      #ffd700,
+      /* Pastel Yellow */
+      #98fb98,
+      /* Pastel Green */
+      #add8e6,
+      /* Pastel Blue */
+      #b0e0e6,
+      /* Pastel Powder Blue */
+      #dda0dd
+      /* Pastel Purple */
     );
 }
 
@@ -33,14 +38,15 @@ a {
   }
 
   body {
-    color: white;
     background: black;
+    color: white;
   }
+
 }
 
 button {
   border-radius: 8px;
-  border: 1px solid transparent;
+  border: 2px solid white;
   padding: 1em 2em;
   margin: 5px;
   font-size: 1.5em;
@@ -50,6 +56,7 @@ button {
   cursor: pointer;
   color: white;
   transition: border-color 0.25s;
+
 }
 
 button:hover {

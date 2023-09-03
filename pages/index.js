@@ -5,9 +5,14 @@ import { useState, useEffect, useRef } from 'react'
 import Counter from '../components/Counter'
 import html2canvas from 'html2canvas';
 import { Analytics } from '@vercel/analytics/react';
-
+import Viz from '../components/Viz';
+import { useSearchParams } from 'next/navigation'
+import ChromeDetection from '../components/ChromeDetection';
 export default function Home() {
 
+  const searchParams = useSearchParams()
+
+  const [isChrome, setIsChrome] = useState(false);
   const [question, setQuestion] = useState();
   const [answer, setAnswer] = useState();
   const [error, setError] = useState();
@@ -20,12 +25,13 @@ export default function Home() {
   const [imgurlink, setImgurlink] = useState(null);
   const [audio, setAudio] = useState(null);
   const audioRef = useRef(null);
+  const [tweet, setTweet] = useState();
 
   function capitializeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
-  const playStart = () => {
+  const playStartSound = () => {
     audioRef.current.play();
   };
 
@@ -48,23 +54,22 @@ export default function Home() {
   useEffect(() => {
     if (question && answer) {
       createImage();
-      downloadImage();
+      // downloadImage();
     }
   }, [question, answer]);
 
   const createImage = async () => {
     console.log('createImage');
-    html2canvas(document.body).then(canvas => {
+    html2canvas(document.getElementById('og')).then(canvas => {
       const imageData = canvas.toDataURL('image/png');
       setImage(imageData);
       uploadImage(imageData);
-
     });
   }
 
   useEffect(() => {
     if (answer) {
-      createMp3(answer);
+      // createMp3(answer);
     }
   }, [answer]);
 
@@ -83,18 +88,15 @@ export default function Home() {
     setAudio(response.url);
   }
 
-  const downloadImage = async (i) => {
+  const downloadImage = async () => {
     console.log('downloadImage');
-    if (i) {
-      const link = document.createElement('a');
-      link.href = image;
-      link.download = 'dadgpt.png';
-      link.click();
-    }
+    const link = document.createElement('a');
+    link.href = image;
+    link.download = link.href;
+    link.click();
   }
 
   const uploadImage = async (i) => {
-
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
@@ -111,43 +113,61 @@ export default function Home() {
 
     const data = await fetch("api/upload", requestOptions)
     const response = await data.json();
-    console.log(response);
+    console.log('imgurlink', response.link);
     setImgurlink(response.link);
   }
 
-  const shareImageToTwitter = async (text) => {
+  const shareImageToTwitter = async () => {
     const maxTweetLength = 280;
-    const url = 'https://dadgpt.vercel.app';
+    const url = "https://dadgippity.com"
     const encodedUrl = encodeURIComponent(url);
-    let tweetText = text + ' ' + url;
+    let tweetText = question + '? ' + answer;
+    // let tweetText = '1234567890 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia odio vitae vestibulum. Donec in efficitur leo. In hac habitasse platea dictumst. Sed ullamcorper, nunc egestas consequat tincidunt, diam nibh euismod magna, quis facilisis orci nisi eget lectus. Fusce non urna vitae'
 
     if (tweetText.length > maxTweetLength) {
-      tweetText = imgurlink + text.substring(0, maxTweetLength - encodedUrl.length - 5) + '...' + ' #dadgpt ' + url; // -4 for ellipsis and space
+      tweetText = tweetText.slice(0, maxTweetLength - 36) + '... ' + url;
+    } else {
+      tweetText += ' ' + url;
     }
 
-    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText + " " + imgurlink)}`;
+    setTweet(tweetText);
+
+    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
     window.open(tweetUrl, '_blank');
   }
 
   async function getAnswer(question) {
     setLoading(true);
-    const request = await fetch('/api/generate', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ question })
-    })
+    if (question.includes('joke')) {
 
-    const response = await request.json();
-    console.log(response)
-    const answer = response.answer;
-    setAnswer(answer);
-    setLoading(false);
+      const joke = await fetch('https://icanhazdadjoke.com/', { headers: { 'Accept': 'application/json' } })
+      const jokeResponse = await joke.json();
+      console.log(jokeResponse.joke)
+      setAnswer(jokeResponse.joke)
+      setLoading(false);
+      const speech = new SpeechSynthesisUtterance(jokeResponse.joke);
+      window.speechSynthesis.speak(speech);
 
+    }
+    else {
+      const request = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ question })
+      })
+
+      const response = await request.json();
+      console.log(response)
+      const answer = response.answer;
+      setAnswer(answer);
+      setLoading(false);
+      const speech = new SpeechSynthesisUtterance(answer);
+      window.speechSynthesis.speak(speech);
+
+    }
     // speakText(answer);
-    const speech = new SpeechSynthesisUtterance(answer);
-    window.speechSynthesis.speak(speech);
   }
 
   useEffect(() => {
@@ -161,7 +181,7 @@ export default function Home() {
 
   const start = () => {
 
-    playStart();
+    playStartSound();
     setAnswer('');
     setQuestion('');
     setRecording(true);
@@ -174,7 +194,7 @@ export default function Home() {
     }
 
     recognition.onerror = (event) => {
-      setStatus('Error occurred in recognition: ' + event.error);
+      setError('Error occurred in recognition: ' + event.error);
     }
 
     recognition.onend = () => {
@@ -189,7 +209,7 @@ export default function Home() {
   }
 
   const stop = () => {
-    playStart();
+    playStartSound();
     recognition.stop();
     setRecording(false);
   }
@@ -197,44 +217,57 @@ export default function Home() {
   return (
     <div className={styles.container} >
       <Head>
-        <title>Dad GPT by Salim Karim</title>
+        <title>DadGippity by Salim Karim</title>
         <meta name="description" content="When Dads not around to answer your questions" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:site" content="@metasal_" />
+        <meta name="twitter:creator" content="@metasal_" />
+        <meta property="twitter:title" content="Come talk to DadGippit" />
+        <meta property="twitter:image" content={imgurlink ? `https://dadgippity.com/api/og?image=${imgurlink}` : 'https://dadgippity.com/api/og'} />
+        <meta property="og:image" content={imgurlink ? `https://dadgippity.com/api/og?image=${imgurlink}` : 'https://dadgippity.com/api/og'} />
+        <meta property="twitter:description" content="When dad is not around to answer questions you have" />
+        <meta property="og:url" content="http:/dadgippity.com" />
+        <meta property="og:title" content="Come talk to DadGippity" />
+        <meta property="og:description" content="When dad is not around to answer questions you have" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main className={styles.main}>
-        <div className={styles.dad}>
-          <Image className={styles.pixelate} src="/dad1.png" width={100} height={100} alt="Brown Dad" />
-          <Image className={styles.pixelate} src="/dad2.png" width={100} height={100} alt="Old Dad" />
-          <Image className={styles.pixelate} src="/dad3.png" width={100} height={100} alt="White Dad" />
-        </div>
-        <h1 className={styles.title}>
-          Dad GPT
-        </h1>
-
-        <p className={styles.description}>
-          Call DadGPT to answer your questions
-        </p>
-
-        <div className={styles.grid}>
-          <button onClick={start} className={styles.button}>🎙️ Start</button>
-          <button onClick={stop} className={styles.button}>🛑 Stop</button>
-          <audio id="audio" ref={audioRef} src="start.mp3" hidden></audio>
-          <div className={styles.container}>
-            <div className={styles.recording} hidden={!recording}></div>
-            <div className={styles.loader} hidden={!loading}></div>
+        <div id='og' className={styles.og}>
+          <div className={styles.dad}>
+            <Image className={styles.pixelate} src="/dad1.png" width={100} height={100} alt="Brown Dad" />
+            <Image className={styles.pixelate} src="/dad2.png" width={100} height={100} alt="Old Dad" />
+            <Image className={styles.pixelate} src="/dad3.png" width={100} height={100} alt="White Dad" />
           </div>
+          <h1 className={styles.title}>
+            DadGippity
+          </h1>
+
+          <p className={styles.description}>
+            Talk to DadGippity to answer your questions
+          </p>
+          <div className={styles.recording} hidden={!recording}></div>
+          <Viz recording={recording} />
+          <div className={styles.grid}>
+            {!recording && <button onClick={start} className={styles.button}>🎙️ Start</button>}
+            {recording && <button onClick={stop} className={styles.button}>🛑 Stop</button>}
+            <audio id="audio" ref={audioRef} src="start.mp3" hidden></audio>
+            <div className={styles.container}>
+              <div className={styles.loader} hidden={!loading}></div>
+            </div>
+          </div>
+          <div>{error}</div>
+          <div>
+            {!question ? <div className={styles.output}>{permsmsg}</div> : null}
+            {question && <div className={styles.question}>{question}?</div>}
+            <div className={styles.answer}>{answer}</div>
+            {question && answer && <button className={styles.share} onClick={() => shareImageToTwitter()}>Share</button>}
+          </div>
+          <footer className={styles.footer}>
+            <Counter />
+            <ChromeDetection />
+          </footer>
         </div>
-        <div>{error}</div>
-        <div>
-          {!question ? <div className={styles.output}>{permsmsg}</div> : null}
-          {question && <div className={styles.question}>{question}?</div>}
-          <div className={styles.answer}>{answer}</div>
-          {question && answer && <button className={styles.share} onClick={() => shareImageToTwitter(question + "? ")}>Share</button>}
-        </div>
-        <footer className={styles.footer}>
-          <Counter />
-        </footer>
       </main >
       <Analytics />
     </div >
