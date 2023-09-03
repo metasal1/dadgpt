@@ -20,12 +20,14 @@ export default function Home() {
   const [recording, setRecording] = useState(false);
   const [perms, setPerms] = useState(false);
   const [permsmsg, setPermsmsg] = useState();
-  const [recognition, setRecognition] = useState();
+  // const [recognition, setRecognition] = useState();
   const [image, setImage] = useState(null);
   const [imgurlink, setImgurlink] = useState(null);
   const [audio, setAudio] = useState(null);
   const audioRef = useRef(null);
   const [tweet, setTweet] = useState();
+  const recognitionRef = useRef(null);
+
 
   function capitializeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -172,7 +174,8 @@ export default function Home() {
 
   useEffect(() => {
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    setRecognition(recognition)
+    // setRecognition(recognition)
+    recognitionRef.current = recognition;
     // recognition.interimResults = true;
     recognition.maxAlternatives = 10;
     // recognition.continuous = true;
@@ -185,6 +188,8 @@ export default function Home() {
     setAnswer('');
     setQuestion('');
     setRecording(true);
+
+    const recognition = recognitionRef.current; // Get the instance from the ref
 
     recognition.onresult = async function (event) {
       const q = event.results[0][0].transcript
@@ -210,6 +215,7 @@ export default function Home() {
 
   const stop = () => {
     playStartSound();
+    const recognition = recognitionRef.current; // Get the instance from the ref
     recognition.stop();
     setRecording(false);
   }
