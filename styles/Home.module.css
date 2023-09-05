@@ -15,7 +15,7 @@
 .footer {
     display: flex;
     flex: 1;
-    padding: 2rem 0;
+    padding: 1rem 0;
     justify-content: center;
     align-items: center;
 }
@@ -40,7 +40,6 @@
 
 .title {
     margin: 0;
-    line-height: 1.15;
     font-size: 4rem;
 
 }
@@ -51,9 +50,7 @@
 }
 
 .description {
-    margin: 4rem 0;
     font-style: italic;
-    line-height: 1.5;
     font-size: 1rem;
 }
 

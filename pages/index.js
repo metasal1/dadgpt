@@ -5,7 +5,6 @@ import { useState, useEffect, useRef } from 'react'
 import Counter from '../components/Counter'
 import html2canvas from 'html2canvas';
 import { Analytics } from '@vercel/analytics/react';
-import Viz from '../components/Viz';
 import ChromeDetection from '../components/ChromeDetection';
 export default function Home() {
 
@@ -23,7 +22,6 @@ export default function Home() {
   const [tweet, setTweet] = useState();
   const recognitionRef = useRef(null);
 
-
   function capitializeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
@@ -37,7 +35,7 @@ export default function Home() {
       try {
         await navigator.mediaDevices.getUserMedia({ audio: true });
         setPerms(true);
-        setPermsmsg('Press START to begin');
+        setPermsmsg('');
       } catch (error) {
         console.error('Microphone access not granted:', error);
         setPerms(false);
@@ -51,7 +49,6 @@ export default function Home() {
   useEffect(() => {
     if (question && answer) {
       createImage();
-      // downloadImage();
     }
   }, [question, answer]);
 
@@ -63,7 +60,6 @@ export default function Home() {
       uploadImage(imageData);
     });
   }
-
 
   const uploadImage = async (i) => {
     var myHeaders = new Headers();
@@ -132,8 +128,6 @@ export default function Home() {
       setAnswer(answer);
       setLoading(false);
       const speech = new SpeechSynthesisUtterance(answer);
-      const voices = window.speechSynthesis.getVoices()
-      speech.voice = voices[30];
       window.speechSynthesis.speak(speech);
 
     }
@@ -142,11 +136,11 @@ export default function Home() {
 
   useEffect(() => {
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    // setRecognition(recognition)
     recognitionRef.current = recognition;
-    // recognition.interimResults = true;
+    recognition.interimResults = true;
     recognition.maxAlternatives = 10;
     recognition.continuous = false;
+
     recognition.lang = 'en-US';
   }, []);
 
@@ -217,35 +211,32 @@ export default function Home() {
             <Image className={styles.pixelate} src="/dad2.png" width={100} height={100} alt="Old Dad" />
             <Image className={styles.pixelate} src="/dad3.png" width={100} height={100} alt="White Dad" />
           </div>
+          <audio id="audio" ref={audioRef} src="start.mp3" hidden></audio>
           <h1 className={styles.title}>
             DadGippity
           </h1>
-
           <p className={styles.description}>
             Talk to DadGippity to answer your questions
           </p>
-          {/* <div className={styles.recording} hidden={recording}></div> */}
-          <Viz recording={recording} />
-          <div className={styles.grid}>
-            {!recording && <button onClick={start} className={styles.button}>🎙️ Start</button>}
-            {recording && <button onClick={stop} className={styles.button}>🛑 Stop</button>}
-            <audio id="audio" ref={audioRef} src="start.mp3" hidden></audio>
-            <div className={styles.container}>
-              <div className={styles.loader} hidden={!loading}></div>
-            </div>
+          {/* <Viz recording={recording} /> */}
+          {recording && <button onClick={stop} className={styles.button}>🛑 Stop</button>}
+          {!recording && <button onClick={start} className={styles.button}>🎙️ Start</button>}
+          <div className={styles.container}>
+            <div className={styles.loader} hidden={!loading}></div>
           </div>
-          <div>{error}</div>
-          <div>
-            {!question ? <div className={styles.output}>{permsmsg}</div> : null}
-            {question && <div className={styles.question}>{question}?</div>}
-            <div className={styles.answer}>{answer}</div>
-            {question && answer && <button className={styles.share} onClick={() => shareImageToTwitter()}>Share</button>}
-          </div>
-          <footer className={styles.footer}>
-            <Counter />
-            <ChromeDetection />
-          </footer>
         </div>
+        <div>{question}</div>
+        <div>{error}</div>
+        <div>
+          {!question ? <div className={styles.output}>{permsmsg}</div> : null}
+          {question && <div className={styles.question}>{question}?</div>}
+          <div className={styles.answer}>{answer}</div>
+          {question && answer && <button className={styles.share} onClick={() => shareImageToTwitter()}>Share</button>}
+        </div>
+        <footer className={styles.footer}>
+          <Counter />
+          <ChromeDetection />
+        </footer>
       </main >
       <Analytics />
     </div >
