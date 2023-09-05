@@ -80,18 +80,19 @@ export default function Home() {
 
     const data = await fetch("api/upload", requestOptions)
     const response = await data.json();
-    console.log('imgurlink', response.link);
+    console.log('imgurlink', response);
     setImgurlink(response.link);
   }
 
   const shareImageToTwitter = async () => {
     const maxTweetLength = 280;
-    const url = "https://dadgippity.com"
-    const encodedUrl = encodeURIComponent(url);
+    const parts = imgurlink.split('/');
+    const filename = parts[parts.length - 1];
+    const url = "dadgippity.com/images/" + filename;
     let tweetText = question + '? ' + answer;
 
     if (tweetText.length > maxTweetLength) {
-      tweetText = tweetText.slice(0, maxTweetLength - 36) + '... ' + url;
+      tweetText = tweetText.slice(0, maxTweetLength - (url.length + 3)) + '... ' + url;
     } else {
       tweetText += ' ' + url;
     }
@@ -221,9 +222,9 @@ export default function Home() {
       <main className={styles.main}>
         <div id='og' className={styles.og}>
           <div className={styles.dad}>
-            <Image className={styles.pixelate} src="/dad1.png" width={100} height={100} alt="Brown Dad" />
-            <Image className={styles.pixelate} src="/dad2.png" width={100} height={100} alt="Old Dad" />
-            <Image className={styles.pixelate} src="/dad3.png" width={100} height={100} alt="White Dad" />
+            <Image className={styles.pixelate} src="/dad1.png" width={"100"} height={"100"} alt="Brown Dad" />
+            <Image className={styles.pixelate} src="/dad2.png" width={"100"} height={"100"} alt="Old Dad" />
+            <Image className={styles.pixelate} src="/dad3.png" width={"100"} height={"100"} alt="White Dad" />
           </div>
           <audio id="audio" ref={audioRef} src="start.mp3" hidden></audio>
           <h1 className={styles.title}>
@@ -232,7 +233,6 @@ export default function Home() {
           <p className={styles.description}>
             Talk to DadGippity to answer your questions
           </p>
-          {/* <Viz recording={recording} /> */}
           {recording && <button onClick={stop} className={styles.button}>🛑 Stop</button>}
           {!recording && <button onClick={start} className={styles.button}>🎙️ Start</button>}
           <div className={styles.container}>

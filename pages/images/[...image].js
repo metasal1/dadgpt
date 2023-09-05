@@ -12,8 +12,8 @@ export default function Page() {
             <meta name="twitter:site" content="@dadgippity" />
             <meta name="twitter:creator" content="@metasal_" />
             <meta property="twitter:title" content="Come talk to DadGippity" />
-            <meta property="twitter:image" content={`https://i.imgur.com/${router.query.image}.png`} />
-            <meta property="og:image" content={`https://i.imgur.com/${router.query.image}.png`} />
+            <meta property="twitter:image" content={`https://dadgippity.com/images/${router.query.image}`} />
+            <meta property="og:image" content={`https://dadgippity.com/images/${router.query.image}`} />
             <meta property="twitter:description" content="When dad is not around to answer questions you have" />
             <meta property="og:url" content="https://dadgippity.com" />
             <meta property="og:title" content="Come talk to DadGippity" />
