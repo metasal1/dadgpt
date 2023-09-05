@@ -232,7 +232,7 @@ export default function Home() {
           <h1 className={styles.title}>
             DadGippity
           </h1>
-          <div>{router.query.q}</div>
+          {/* <div>{router.query.q}</div> */}
           <p className={styles.description}>
             Talk to DadGippity to answer your questions
           </p>
