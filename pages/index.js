@@ -7,8 +7,12 @@ import html2canvas from 'html2canvas';
 import { Analytics } from '@vercel/analytics/react';
 import ChromeDetection from '../components/ChromeDetection';
 import Viz from '../components/Viz';
+import { useRouter } from 'next/router'
+
 
 export default function Home() {
+
+  const router = useRouter()
 
   const [question, setQuestion] = useState();
   const [answer, setAnswer] = useState();
@@ -86,9 +90,7 @@ export default function Home() {
 
   const shareImageToTwitter = async () => {
     const maxTweetLength = 280;
-    const parts = imgurlink.split('/');
-    const filename = parts[parts.length - 1];
-    const url = "dadgippity.com/images/" + filename;
+    const url = "dadgippity.com?q=" + router.query.q;
     let tweetText = question + '? ' + answer;
 
     if (tweetText.length > maxTweetLength) {
@@ -210,8 +212,8 @@ export default function Home() {
         <meta name="twitter:site" content="@dadgippity" />
         <meta name="twitter:creator" content="@metasal_" />
         <meta property="twitter:title" content="Come talk to DadGippity" />
-        <meta property="twitter:image" content={imgurlink ? `https://dadgippity.com/api/og?image=${imgurlink}` : 'https://dadgippity.com/api/og'} />
-        <meta property="og:image" content={imgurlink ? `https://dadgippity.com/api/og?image=${imgurlink}` : 'https://dadgippity.com/api/og'} />
+        <meta property="twitter:image" content={`https://dadgippity.com/images/${router.query.q}`} />
+        <meta property="og:image" content={`https://dadgippity.com/images/${router.query.q}`} />
         <meta property="twitter:description" content="When dad is not around to answer questions you have" />
         <meta property="og:url" content="https://dadgippity.com" />
         <meta property="og:title" content="Come talk to DadGippity" />
@@ -230,6 +232,7 @@ export default function Home() {
           <h1 className={styles.title}>
             DadGippity
           </h1>
+          <div>{router.query.q}</div>
           <p className={styles.description}>
             Talk to DadGippity to answer your questions
           </p>
