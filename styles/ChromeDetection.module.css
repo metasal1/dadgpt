@@ -4,5 +4,6 @@
     position: absolute;
     top: 0;
     text-align: center;
-    color: #0070f3
+    color: #0070f3;
+    font-size: .8em;
 }

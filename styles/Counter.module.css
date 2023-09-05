@@ -30,6 +30,8 @@
 .footer {
     text-align: center;
     font-size: x-small;
+    position: absolute;
+    bottom: 0;
 }
 
 .browser {

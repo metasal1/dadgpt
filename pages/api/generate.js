@@ -50,7 +50,7 @@ export default async function handler(req, res) {
         db.collection(collectionName).insertOne(data)
           .then(result => {
             console.log('Data saved to MongoDB:', result);
-            client.close();
+            // client.close();
           })
           .catch(err => {
             console.error('Error saving data to MongoDB:', err);

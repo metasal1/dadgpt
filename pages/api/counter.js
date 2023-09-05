@@ -17,7 +17,7 @@ export default async function handler(req, res) {
     const db = client.db(dbName);
     const count = await db.collection('queries').countDocuments();
     res.status(200).json({ count });
-    client.close();
+    // client.close();
   } catch (error) {
     console.error('Error fetching document count:', error);
     res.status(500).json({ error: 'Error fetching document count' });

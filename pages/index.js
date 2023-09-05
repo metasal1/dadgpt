@@ -6,13 +6,9 @@ import Counter from '../components/Counter'
 import html2canvas from 'html2canvas';
 import { Analytics } from '@vercel/analytics/react';
 import Viz from '../components/Viz';
-import { useSearchParams } from 'next/navigation'
 import ChromeDetection from '../components/ChromeDetection';
 export default function Home() {
 
-  const searchParams = useSearchParams()
-
-  const [isChrome, setIsChrome] = useState(false);
   const [question, setQuestion] = useState();
   const [answer, setAnswer] = useState();
   const [error, setError] = useState();
@@ -20,7 +16,6 @@ export default function Home() {
   const [recording, setRecording] = useState(false);
   const [perms, setPerms] = useState(false);
   const [permsmsg, setPermsmsg] = useState();
-  // const [recognition, setRecognition] = useState();
   const [image, setImage] = useState(null);
   const [imgurlink, setImgurlink] = useState(null);
   const [audio, setAudio] = useState(null);
@@ -69,34 +64,6 @@ export default function Home() {
     });
   }
 
-  useEffect(() => {
-    if (answer) {
-      // createMp3(answer);
-    }
-  }, [answer]);
-
-  const createMp3 = async (a) => {
-    console.log('createMp3');
-
-    const url = await fetch('api/voice', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ answer: a })
-    })
-    const response = await url.json();
-    console.log(response);
-    setAudio(response.url);
-  }
-
-  const downloadImage = async () => {
-    console.log('downloadImage');
-    const link = document.createElement('a');
-    link.href = image;
-    link.download = link.href;
-    link.click();
-  }
 
   const uploadImage = async (i) => {
     var myHeaders = new Headers();
@@ -124,7 +91,6 @@ export default function Home() {
     const url = "https://dadgippity.com"
     const encodedUrl = encodeURIComponent(url);
     let tweetText = question + '? ' + answer;
-    // let tweetText = '1234567890 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia odio vitae vestibulum. Donec in efficitur leo. In hac habitasse platea dictumst. Sed ullamcorper, nunc egestas consequat tincidunt, diam nibh euismod magna, quis facilisis orci nisi eget lectus. Fusce non urna vitae'
 
     if (tweetText.length > maxTweetLength) {
       tweetText = tweetText.slice(0, maxTweetLength - 36) + '... ' + url;
@@ -166,6 +132,8 @@ export default function Home() {
       setAnswer(answer);
       setLoading(false);
       const speech = new SpeechSynthesisUtterance(answer);
+      const voices = window.speechSynthesis.getVoices()
+      speech.voice = voices[30];
       window.speechSynthesis.speak(speech);
 
     }
@@ -178,7 +146,7 @@ export default function Home() {
     recognitionRef.current = recognition;
     // recognition.interimResults = true;
     recognition.maxAlternatives = 10;
-    // recognition.continuous = true;
+    recognition.continuous = false;
     recognition.lang = 'en-US';
   }, []);
 
@@ -193,9 +161,11 @@ export default function Home() {
 
     recognition.onresult = async function (event) {
       const q = event.results[0][0].transcript
-      setRecording(false);
+      // setRecording(false);
       setQuestion(capitializeFirstLetter(q))
       getAnswer(q)
+      recognition.stop();
+
     }
 
     recognition.onerror = (event) => {
@@ -208,6 +178,8 @@ export default function Home() {
 
     recognition.onspeechend = () => {
       console.log("Speech has stopped being detected");
+      recognition.stop();
+
     };
 
     recognition.start();
@@ -226,13 +198,13 @@ export default function Home() {
         <title>DadGippity by Salim Karim</title>
         <meta name="description" content="When Dads not around to answer your questions" />
         <meta name="twitter:card" content="summary" />
-        <meta name="twitter:site" content="@metasal_" />
+        <meta name="twitter:site" content="@dadgippity" />
         <meta name="twitter:creator" content="@metasal_" />
-        <meta property="twitter:title" content="Come talk to DadGippit" />
+        <meta property="twitter:title" content="Come talk to DadGippity" />
         <meta property="twitter:image" content={imgurlink ? `https://dadgippity.com/api/og?image=${imgurlink}` : 'https://dadgippity.com/api/og'} />
         <meta property="og:image" content={imgurlink ? `https://dadgippity.com/api/og?image=${imgurlink}` : 'https://dadgippity.com/api/og'} />
         <meta property="twitter:description" content="When dad is not around to answer questions you have" />
-        <meta property="og:url" content="http:/dadgippity.com" />
+        <meta property="og:url" content="https://dadgippity.com" />
         <meta property="og:title" content="Come talk to DadGippity" />
         <meta property="og:description" content="When dad is not around to answer questions you have" />
         <link rel="icon" href="/favicon.ico" />
@@ -252,7 +224,7 @@ export default function Home() {
           <p className={styles.description}>
             Talk to DadGippity to answer your questions
           </p>
-          <div className={styles.recording} hidden={!recording}></div>
+          {/* <div className={styles.recording} hidden={recording}></div> */}
           <Viz recording={recording} />
           <div className={styles.grid}>
             {!recording && <button onClick={start} className={styles.button}>🎙️ Start</button>}

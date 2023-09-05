@@ -25,7 +25,7 @@ export default function Home() {
   }, []);
   return (
     <div className={styles.container} >
-      <h1>Last 20 Questions and Answers</h1>
+      <h1>Last 10 Questions and Answers</h1>
       {count}
       {documents.map((document) => (
         <div key={document.id}>
