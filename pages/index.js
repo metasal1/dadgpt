@@ -6,6 +6,8 @@ import Counter from '../components/Counter'
 import html2canvas from 'html2canvas';
 import { Analytics } from '@vercel/analytics/react';
 import ChromeDetection from '../components/ChromeDetection';
+import Viz from '../components/Viz';
+
 export default function Home() {
 
   const [question, setQuestion] = useState();
@@ -54,7 +56,7 @@ export default function Home() {
 
   const createImage = async () => {
     console.log('createImage');
-    html2canvas(document.getElementById('og')).then(canvas => {
+    html2canvas(document.body).then(canvas => {
       const imageData = canvas.toDataURL('image/png');
       setImage(imageData);
       uploadImage(imageData);
@@ -137,12 +139,18 @@ export default function Home() {
   useEffect(() => {
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognitionRef.current = recognition;
-    recognition.interimResults = true;
+    // recognition.interimResults = true;
     recognition.maxAlternatives = 10;
     recognition.continuous = false;
-
     recognition.lang = 'en-US';
   }, []);
+
+  useEffect(() => {
+    if (question) {
+      getAnswer(question);
+    }
+  }, [question]);
+
 
   const start = () => {
 
@@ -155,24 +163,30 @@ export default function Home() {
 
     recognition.onresult = async function (event) {
       const q = event.results[0][0].transcript
-      // setRecording(false);
+      setRecording(false);
       setQuestion(capitializeFirstLetter(q))
-      getAnswer(q)
+      // getAnswer(q)
       recognition.stop();
 
     }
 
     recognition.onerror = (event) => {
       setError('Error occurred in recognition: ' + event.error);
+      recognition.stop();
+
     }
 
     recognition.onend = () => {
       recognition.stop();
+      setRecording(false);
+
     }
 
     recognition.onspeechend = () => {
       console.log("Speech has stopped being detected");
       recognition.stop();
+      setRecording(false);
+
 
     };
 
@@ -225,13 +239,15 @@ export default function Home() {
             <div className={styles.loader} hidden={!loading}></div>
           </div>
         </div>
-        <div>{question}</div>
-        <div>{error}</div>
         <div>
+          <Viz recording={recording} />
+
+          <div>{error}</div>
           {!question ? <div className={styles.output}>{permsmsg}</div> : null}
           {question && <div className={styles.question}>{question}?</div>}
           <div className={styles.answer}>{answer}</div>
           {question && answer && <button className={styles.share} onClick={() => shareImageToTwitter()}>Share</button>}
+          {/* {imgurlink} */}
         </div>
         <footer className={styles.footer}>
           <Counter />

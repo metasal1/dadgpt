@@ -72,7 +72,7 @@ const Viz = (props) => {
   return (
     <div>
       {props.recording && (
-        <canvas ref={canvasRef} width="300" height="100"></canvas>
+        <canvas ref={canvasRef} width="300" height="200"></canvas>
       )}
     </div>
   );
