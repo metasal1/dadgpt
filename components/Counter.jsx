@@ -3,7 +3,7 @@ import styles from "../styles/Counter.module.css";
 import xLogo from "../public/x.svg";
 import Image from "next/image";
 
-const DocumentCount = () => {
+const DocumentCount = (props) => {
   const [count, setCount] = useState();
   const [browser, setBrowser] = useState(null);
 
@@ -39,7 +39,7 @@ const DocumentCount = () => {
       {count && <div>DadGippity has answered {count} questions so far</div>}
       <div>
         <a href="https://metasal.vercel.app" target="_blank">
-          Copyright 2023 © Salim Karim
+          Copyright 2023 © Salim Karim | {props.imgId || "null"}
         </a>
       </div>
       <div className={styles.browser}>{browser}</div>

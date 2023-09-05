@@ -23,6 +23,7 @@ export default function Home() {
   const [permsmsg, setPermsmsg] = useState();
   const [image, setImage] = useState(null);
   const [imgurlink, setImgurlink] = useState(null);
+  const [imgId, setImgId] = useState(null);
   const [audio, setAudio] = useState(null);
   const audioRef = useRef(null);
   const [tweet, setTweet] = useState();
@@ -86,11 +87,13 @@ export default function Home() {
     const response = await data.json();
     console.log('imgurlink', response);
     setImgurlink(response.link);
+    const imgId = response.link.split('/').pop().split('.')[0]; // This will extract the last part of the URL
+    setImgId(imgId);
   }
 
   const shareImageToTwitter = async () => {
     const maxTweetLength = 280;
-    const url = "dadgippity.com?q=" + router.query.q;
+    const url = encodeURI("https://dadgippity.com?q=" + imgId || router.query.q)
     let tweetText = question + '? ' + answer;
 
     if (tweetText.length > maxTweetLength) {
@@ -232,7 +235,6 @@ export default function Home() {
           <h1 className={styles.title}>
             DadGippity
           </h1>
-          {/* <div>{router.query.q}</div> */}
           <p className={styles.description}>
             Talk to DadGippity to answer your questions
           </p>
@@ -250,10 +252,9 @@ export default function Home() {
           {question && <div className={styles.question}>{question}?</div>}
           <div className={styles.answer}>{answer}</div>
           {question && answer && <button className={styles.share} onClick={() => shareImageToTwitter()}>Share</button>}
-          {/* {imgurlink} */}
         </div>
         <footer className={styles.footer}>
-          <Counter />
+          <Counter imgId={imgId} />
           <ChromeDetection />
         </footer>
       </main >
