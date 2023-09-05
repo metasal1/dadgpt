@@ -215,8 +215,8 @@ export default function Home() {
         <meta name="twitter:site" content="@dadgippity" />
         <meta name="twitter:creator" content="@metasal_" />
         <meta property="twitter:title" content="Come talk to DadGippity" />
-        <meta property="twitter:image" content={`https://dadgippity.com?q=${router.query.q}`} />
-        <meta property="og:image" content={`https://dadgippity.com?q=${router.query.q}`} />
+        <meta property="twitter:image" content={`https://dadgippity.com?q=${router.query.q || 'Unwdx9q'}`} />
+        <meta property="og:image" content={`https://dadgippity.com?q=${router.query.q || 'Unwdx9q'}`} />
         <meta property="twitter:description" content="When dad is not around to answer questions you have" />
         <meta property="og:url" content="https://dadgippity.com" />
         <meta property="og:title" content="Come talk to DadGippity" />
