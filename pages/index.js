@@ -2,13 +2,12 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import { useState, useEffect, useRef } from 'react'
-import Counter from '../components/Counter'
+import Footer from '../components/Footer'
 import html2canvas from 'html2canvas';
 import { Analytics } from '@vercel/analytics/react';
 import ChromeDetection from '../components/ChromeDetection';
 import Viz from '../components/Viz';
 import { useRouter } from 'next/router'
-
 
 export default function Home() {
 
@@ -254,7 +253,7 @@ export default function Home() {
           {question && answer && <button className={styles.share} onClick={() => shareImageToTwitter()}>Share</button>}
         </div>
         <footer className={styles.footer}>
-          <Counter imgId={imgId} />
+          <Footer imgId={imgId} />
           <ChromeDetection />
         </footer>
       </main >
