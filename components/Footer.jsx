@@ -45,7 +45,7 @@ const DocumentCount = (props) => {
       {count && <div>DadGippity has answered {count} questions so far</div>}
       <div>
         <a href="https://metasal.vercel.app" target="_blank">
-          Copyright 2023 © Salim Karim | {props.imgId || "null"}
+          Copyright 2023 © Salim Karim | {props.imgId || "null"} |{" "}
         </a>
       </div>
       <div className={styles.browser}>{browser}</div>
